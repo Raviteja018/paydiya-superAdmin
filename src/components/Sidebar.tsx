@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import * as Icons from './icons';
+import paydiyaLogo from '../assets/paydiya_logo.png';
 
 interface SidebarProps {
   activeTab: string;
@@ -15,13 +16,6 @@ interface MenuSubItem {
   label: string;
 }
 
-interface MenuItem {
-  id: string;
-  label: string;
-  icon: React.ComponentType<{ size?: number; className?: string }>;
-  subItems?: MenuSubItem[];
-}
-
 export default function Sidebar({
   activeTab,
   setActiveTab,
@@ -33,11 +27,11 @@ export default function Sidebar({
   // Manage which menu groups are expanded in sidebar
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
     merchants: true,
-    payments: true,
-    finance: true,
-    risk: true,
-    admin: true,
-    developer: true
+    payments: false,
+    finance: false,
+    risk: false,
+    admin: false,
+    developer: false
   });
 
   const toggleSection = (section: string) => {
@@ -66,7 +60,7 @@ export default function Sidebar({
     {
       title: 'Payment Operations',
       id: 'payments',
-      icon: Icons.TransactionIcon,
+      icon: Icons.PaymentOperationsIcon,
       subItems: [
         { id: 'transactions', label: 'Transactions' },
         { id: 'refunds', label: 'Refunds' },
@@ -117,117 +111,133 @@ export default function Sidebar({
   ];
 
   return (
-    <aside className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
+    <aside className={`sidebar ${collapsed ? 'collapsed' : ''}`} aria-label="Main Navigation">
+      {/* Brand Header */}
       <div className="sidebar-header">
-        <div className="logo-container">P</div>
-        <span className="logo-text">
-          Pay<span style={{ color: 'var(--primary)' }}>diya</span>
-          <span className="logo-badge">Pro</span>
-        </span>
+        <div className="sidebar-brand">
+          <div className="logo-container">
+            <img src={paydiyaLogo} alt="Paydiya logo" className="logo-image" />
+          </div>
+          <span className="logo-text">
+            Pay<span style={{ color: 'var(--primary)' }}>diya</span>
+          </span>
+        </div>
       </div>
 
+      {/* Navigation Groups Layout Tree */}
       <nav className="sidebar-menu">
-        {/* Overview Tab */}
-        <div 
-          className={`menu-item ${activeTab === 'overview' ? 'active' : ''}`}
-          onClick={() => handleTabClick('overview')}
-        >
-          <div className="menu-item-link">
-            <Icons.DashboardIcon className="menu-icon" />
-            <span className="menu-label">Overview</span>
-          </div>
-        </div>
-
-        {/* Grouped sections */}
-        {menuGroups.map(group => {
-          const isGroupActive = activeTab === group.id;
-          const isExpanded = expandedSections[group.id];
-
-          return (
-            <div key={group.id} style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-              <div 
-                className={`menu-item ${isGroupActive ? 'active' : ''}`}
-                onClick={() => {
-                  if (collapsed) {
-                    setCollapsed(false);
-                  }
-                  toggleSection(group.id);
-                  handleTabClick(group.id, group.subItems[0].id);
-                }}
-              >
-                <div className="menu-item-link">
-                  <group.icon className="menu-icon" />
-                  <span className="menu-label">{group.title}</span>
-                </div>
-                {!collapsed && (
-                  <Icons.ChevronDownIcon 
-                    size={14} 
-                    style={{ 
-                      transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
-                      transition: 'transform var(--transition-fast)',
-                      opacity: 0.5 
-                    }} 
-                  />
-                )}
-              </div>
-
-              {/* Submenu Accordion */}
-              {isExpanded && !collapsed && (
-                <div className="submenu-list">
-                  {group.subItems.map(subItem => {
-                    const isSubActive = isGroupActive && activeSubTab === subItem.id;
-                    return (
-                      <div
-                        key={subItem.id}
-                        className={`submenu-item ${isSubActive ? 'active' : ''}`}
-                        onClick={() => handleTabClick(group.id, subItem.id)}
-                      >
-                        <span>{subItem.label}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
+        {/* Core Scope Overview Section */}
+        <div className="menu-section">
+          <div 
+            className={`menu-item ${activeTab === 'overview' ? 'active' : ''}`}
+            onClick={() => handleTabClick('overview')}
+          >
+            <div className="menu-item-link">
+              <Icons.DashboardIcon className="menu-icon" />
+              <span className="menu-label">Overview</span>
             </div>
-          );
-        })}
-
-        <div className="menu-section-title" style={{ marginTop: '12px' }}>System</div>
-
-        {/* Reports */}
-        <div 
-          className={`menu-item ${activeTab === 'reports' ? 'active' : ''}`}
-          onClick={() => handleTabClick('reports')}
-        >
-          <div className="menu-item-link">
-            <Icons.FileIcon className="menu-icon" />
-            <span className="menu-label">Reports</span>
           </div>
         </div>
 
-        {/* Support Center */}
-        <div 
-          className={`menu-item ${activeTab === 'support' ? 'active' : ''}`}
-          onClick={() => handleTabClick('support')}
-        >
-          <div className="menu-item-link">
-            <Icons.SupportIcon className="menu-icon" />
-            <span className="menu-label">Support Center</span>
-          </div>
+        {/* Core Operations Section */}
+        <div className="menu-section">
+          {!collapsed && <div className="menu-section-title">Core Operations</div>}
+          
+          {menuGroups.map(group => {
+            const isGroupActive = activeTab === group.id;
+            const isExpanded = expandedSections[group.id];
+
+            return (
+              <div key={group.id} className="menu-group-wrapper">
+                <div 
+                  className={`menu-item ${isGroupActive ? 'active' : ''} ${isExpanded && !collapsed ? 'expanded' : ''}`}
+                  onClick={() => {
+                    if (collapsed) {
+                      setCollapsed(false);
+                      setExpandedSections(prev => ({ ...prev, [group.id]: true }));
+                      handleTabClick(group.id, group.subItems[0].id);
+                    } else {
+                      toggleSection(group.id);
+                    }
+                  }}
+                >
+                  <div className="menu-item-link">
+                    <group.icon className="menu-icon" />
+                    <span className="menu-label">{group.title}</span>
+                  </div>
+                  {!collapsed && (
+                    <Icons.ChevronDownIcon 
+                      size={14} 
+                      className={`chevron-icon ${isExpanded ? 'rotated' : ''}`}
+                    />
+                  )}
+                </div>
+
+                {/* Submenu CSS Grid Animate Wrapper Container */}
+                <div className={`submenu-wrapper ${isExpanded && !collapsed ? 'open' : ''}`}>
+                  <div className="submenu-list">
+                    {group.subItems.map(subItem => {
+                      const isSubActive = isGroupActive && activeSubTab === subItem.id;
+                      return (
+                        <div
+                          key={subItem.id}
+                          className={`submenu-item ${isSubActive ? 'active' : ''}`}
+                          onClick={(e) => {
+                            e.stopPropagation(); // Avoid parent link bubble actions
+                            handleTabClick(group.id, subItem.id);
+                          }}
+                        >
+                          <span>{subItem.label}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
 
-        {/* Settings */}
-        <div 
-          className={`menu-item ${activeTab === 'settings' ? 'active' : ''}`}
-          onClick={() => handleTabClick('settings')}
-        >
-          <div className="menu-item-link">
-            <Icons.SettingsIcon className="menu-icon" />
-            <span className="menu-label">Settings</span>
+        {/* System Administration Configuration Section */}
+        <div className="menu-section">
+          {!collapsed && <div className="menu-section-title">System</div>}
+
+          {/* Reports */}
+          <div 
+            className={`menu-item ${activeTab === 'reports' ? 'active' : ''}`}
+            onClick={() => handleTabClick('reports')}
+          >
+            <div className="menu-item-link">
+              <Icons.FileIcon className="menu-icon" />
+              <span className="menu-label">Reports</span>
+            </div>
+          </div>
+
+          {/* Support Center */}
+          <div 
+            className={`menu-item ${activeTab === 'support' ? 'active' : ''}`}
+            onClick={() => handleTabClick('support')}
+          >
+            <div className="menu-item-link">
+              <Icons.HeadsetIcon className="menu-icon" />
+              <span className="menu-label">Support Center</span>
+            </div>
+          </div>
+
+          {/* Settings */}
+          <div 
+            className={`menu-item ${activeTab === 'settings' ? 'active' : ''}`}
+            onClick={() => handleTabClick('settings')}
+          >
+            <div className="menu-item-link">
+              <Icons.SettingsIcon className="menu-icon" />
+              <span className="menu-label">Settings</span>
+            </div>
           </div>
         </div>
       </nav>
 
+      {/* Enhanced Footer Element Container */}
       <div className="sidebar-footer">
         <div className="profile-avatar-container">
           <div className="profile-avatar">SJ</div>

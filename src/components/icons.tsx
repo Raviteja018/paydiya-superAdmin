@@ -48,6 +48,15 @@ export const TransactionIcon = ({ size = 18, ...props }: IconProps) => (
   </svg>
 );
 
+export const PaymentOperationsIcon = ({ size = 18, ...props }: IconProps) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <rect x="3" y="5" width="18" height="14" rx="3" />
+    <path d="M3 10h18" />
+    <path d="M8 15h3" />
+    <path d="m14 14 2 2 3-3" />
+  </svg>
+);
+
 export const RefundIcon = ({ size = 18, ...props }: IconProps) => (
   <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" {...props}>
     <path d="M3 7v6h6" />
@@ -138,6 +147,15 @@ export const SupportIcon = ({ size = 18, ...props }: IconProps) => (
     <circle cx="12" cy="12" r="10" />
     <circle cx="12" cy="12" r="4" />
     <path d="m4.93 4.93 4.24 4.24M14.83 14.83l4.24 4.24M14.83 9.17l4.24-4.24M4.93 19.07l4.24-4.24" />
+  </svg>
+);
+
+export const HeadsetIcon = ({ size = 18, ...props }: IconProps) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <path d="M4 12a8 8 0 0 1 16 0" />
+    <path d="M4 12v4a2 2 0 0 0 2 2h2v-6H6a2 2 0 0 0-2 2Z" />
+    <path d="M20 12v4a2 2 0 0 1-2 2h-2v-6h2a2 2 0 0 1 2 2Z" />
+    <path d="M12 18v2a2 2 0 0 1-2 2h-1" />
   </svg>
 );
 
